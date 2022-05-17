@@ -1,0 +1,106 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/uvarikuti/ECE285/Project/Few-Shot-Segmentation-ECE-285/panet/PANet/experiments",
+    "dependencies": [
+      "numpy==1.19.5",
+      "sacred==0.8.2"
+    ],
+    "mainfile": "config.py",
+    "name": "PANet",
+    "repositories": [
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      }
+    ],
+    "sources": [
+      [
+        "config.py",
+        "_sources/config_80534a5f74433390e9cc7626a6ca507c.py"
+      ],
+      [
+        "test.py",
+        "_sources/test_7d7e023c6864831ca5a40f6bfb98ecb1.py"
+      ],
+      [
+        "train.py",
+        "_sources/train_8ca80e4d3218ce3b1dc73df289d1501a.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/uvarikuti/.local/lib/python3.9/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n",
+    "  File \"/home/uvarikuti/ECE285/Project/Few-Shot-Segmentation-ECE-285/panet/PANet/experiments/train.py\", line 83, in main\n    for i_iter, sample_batched in enumerate(trainloader):\n",
+    "  File \"/opt/conda/lib/python3.9/site-packages/torch/utils/data/dataloader.py\", line 521, in __next__\n    data = self._next_data()\n",
+    "  File \"/opt/conda/lib/python3.9/site-packages/torch/utils/data/dataloader.py\", line 1203, in _next_data\n    return self._process_data(data)\n",
+    "  File \"/opt/conda/lib/python3.9/site-packages/torch/utils/data/dataloader.py\", line 1229, in _process_data\n    data.reraise()\n",
+    "  File \"/opt/conda/lib/python3.9/site-packages/torch/_utils.py\", line 425, in reraise\n    raise self.exc_type(msg)\n",
+    "PIL.UnidentifiedImageError: Caught UnidentifiedImageError in DataLoader worker process 0.\nOriginal Traceback (most recent call last):\n  File \"/opt/conda/lib/python3.9/site-packages/torch/utils/data/_utils/worker.py\", line 287, in _worker_loop\n    data = fetcher.fetch(index)\n  File \"/opt/conda/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py\", line 44, in fetch\n    data = [self.dataset[idx] for idx in possibly_batched_index]\n  File \"/opt/conda/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py\", line 44, in <listcomp>\n    data = [self.dataset[idx] for idx in possibly_batched_index]\n  File \"/home/uvarikuti/ECE285/Project/Few-Shot-Segmentation-ECE-285/panet/PANet/experiments/dataloaders/common.py\", line 165, in __getitem__\n    sample = [self.datasets[dataset_idx][data_idx]\n  File \"/home/uvarikuti/ECE285/Project/Few-Shot-Segmentation-ECE-285/panet/PANet/experiments/dataloaders/common.py\", line 165, in <listcomp>\n    sample = [self.datasets[dataset_idx][data_idx]\n  File \"/home/uvarikuti/ECE285/Project/Few-Shot-Segmentation-ECE-285/panet/PANet/experiments/dataloaders/common.py\", line 197, in __getitem__\n    return self.dataset[self.indices[idx]]\n  File \"/home/uvarikuti/ECE285/Project/Few-Shot-Segmentation-ECE-285/panet/PANet/experiments/dataloaders/pascal.py\", line 48, in __getitem__\n    image = Image.open(os.path.join(self._image_dir, f'{id_}.jpg'))\n  File \"/opt/conda/lib/python3.9/site-packages/PIL/Image.py\", line 3023, in open\n    raise UnidentifiedImageError(\nPIL.UnidentifiedImageError: cannot identify image file '../../data/Pascal/VOCdevkit/VOC2012/JPEGImages/2008_008522.jpg'\n\n"
+  ],
+  "heartbeat": "2022-05-15T22:52:46.094771",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz",
+    "hostname": "dsmlp-jupyter-uvarikuti",
+    "os": [
+      "Linux",
+      "Linux-3.10.0-1160.59.1.el7.x86_64-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.9.5"
+  },
+  "meta": {
+    "command": "main",
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "gpu_id=0",
+        "mode=train",
+        "dataset=VOC",
+        "label_sets=0",
+        "model.align=False",
+        "task.n_ways=1",
+        "task.n_shots=1"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2022-05-15T22:52:39.337885",
+  "status": "FAILED",
+  "stop_time": "2022-05-15T22:52:46.100567"
+}

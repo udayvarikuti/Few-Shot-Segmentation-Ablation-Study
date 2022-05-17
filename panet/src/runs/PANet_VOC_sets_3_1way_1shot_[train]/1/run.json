@@ -1,0 +1,221 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/uvarikuti/ECE285/Project/Few-Shot-Segmentation-ECE-285/panet/PANet",
+    "dependencies": [
+      "numpy==1.19.5",
+      "sacred==0.8.2"
+    ],
+    "mainfile": "config.py",
+    "name": "PANet",
+    "repositories": [
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      }
+    ],
+    "sources": [
+      [
+        "config.py",
+        "_sources/config_80534a5f74433390e9cc7626a6ca507c.py"
+      ],
+      [
+        "dataloaders/__init__.py",
+        "_sources/__init___d41d8cd98f00b204e9800998ecf8427e.py"
+      ],
+      [
+        "dataloaders/coco.py",
+        "_sources/coco_25b286f45352604530081edcd8fcb1c8.py"
+      ],
+      [
+        "dataloaders/common.py",
+        "_sources/common_77a6e4017a3138001885fce8f68644cc.py"
+      ],
+      [
+        "dataloaders/customized.py",
+        "_sources/customized_7e4142f0c3a0a4a1b96805e636309882.py"
+      ],
+      [
+        "dataloaders/pascal.py",
+        "_sources/pascal_e7052ef259888e1bae1f98bbb9d450d1.py"
+      ],
+      [
+        "dataloaders/transforms.py",
+        "_sources/transforms_81b8799491902e4ce29301510dbd60f3.py"
+      ],
+      [
+        "models/__init__.py",
+        "_sources/__init___d41d8cd98f00b204e9800998ecf8427e.py"
+      ],
+      [
+        "models/fewshot.py",
+        "_sources/fewshot_12d79f31d3b4749e6ebdc7fc6f0c7a68.py"
+      ],
+      [
+        "models/vgg.py",
+        "_sources/vgg_1296717248b97d3d3b97b9ebf75d1cf3.py"
+      ],
+      [
+        "util/__init__.py",
+        "_sources/__init___d41d8cd98f00b204e9800998ecf8427e.py"
+      ],
+      [
+        "util/metric.py",
+        "_sources/metric_a47f9a386e5fb7cabefd301ba35d68ef.py"
+      ],
+      [
+        "util/sbd_instance_process.py",
+        "_sources/sbd_instance_process_daec41ae872d4e5b4921368f297f5163.py"
+      ],
+      [
+        "util/scribbles.py",
+        "_sources/scribbles_b5484f6714f71d351fb50c4b8620dc90.py"
+      ],
+      [
+        "util/utils.py",
+        "_sources/utils_0fcdf77fd758323af732302311605fb6.py"
+      ],
+      [
+        "util/voc_classwise_filenames.py",
+        "_sources/voc_classwise_filenames_58a77b11adf384dc5e8b05200dcde025.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/uvarikuti/.local/lib/python3.9/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n",
+    "  File \"/home/uvarikuti/ECE285/Project/Few-Shot-Segmentation-ECE-285/panet/PANet/experiments/../train.py\", line 27, in main\n    _run.observers[0].save_file(source_file, f'source/{source_file}')\n",
+    "  File \"/home/uvarikuti/.local/lib/python3.9/site-packages/sacred/observers/file_storage.py\", line 208, in save_file\n    copyfile(filename, dest_file)\n",
+    "  File \"/opt/conda/lib/python3.9/shutil.py\", line 264, in copyfile\n    with open(src, 'rb') as fsrc, open(dst, 'wb') as fdst:\n",
+    "FileNotFoundError: [Errno 2] No such file or directory: 'config.py'\n"
+  ],
+  "heartbeat": "2022-05-15T22:51:17.117199",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz",
+    "hostname": "dsmlp-jupyter-uvarikuti",
+    "os": [
+      "Linux",
+      "Linux-3.10.0-1160.59.1.el7.x86_64-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.9.5"
+  },
+  "meta": {
+    "command": "main",
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "gpu_id=0",
+        "mode=train",
+        "dataset=VOC",
+        "label_sets=3",
+        "model.align=False",
+        "task.n_ways=1",
+        "task.n_shots=1"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2022-05-15T22:51:17.068562",
+  "status": "FAILED",
+  "stop_time": "2022-05-15T22:51:17.123410"
+}

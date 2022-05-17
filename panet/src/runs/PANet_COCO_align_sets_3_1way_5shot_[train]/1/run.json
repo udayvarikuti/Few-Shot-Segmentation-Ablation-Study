@@ -1,0 +1,103 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/uvarikuti/ECE285/Project/Few-Shot-Segmentation-ECE-285/panet/PANet/experiments",
+    "dependencies": [
+      "numpy==1.19.5",
+      "sacred==0.8.2"
+    ],
+    "mainfile": "config.py",
+    "name": "PANet",
+    "repositories": [
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      },
+      {
+        "commit": "c92293775dd10c8642d5fbdbe3db329832f896d0",
+        "dirty": true,
+        "url": "https://github.com/udayvarikuti/Few-Shot-Segmentation-ECE-285.git"
+      }
+    ],
+    "sources": [
+      [
+        "config.py",
+        "_sources/config_80534a5f74433390e9cc7626a6ca507c.py"
+      ],
+      [
+        "test.py",
+        "_sources/test_7d7e023c6864831ca5a40f6bfb98ecb1.py"
+      ],
+      [
+        "train.py",
+        "_sources/train_8ca80e4d3218ce3b1dc73df289d1501a.py"
+      ]
+    ]
+  },
+  "fail_trace": [
+    "Traceback (most recent call last):\n",
+    "  File \"/home/uvarikuti/.local/lib/python3.9/site-packages/sacred/config/captured_function.py\", line 42, in captured_function\n    result = wrapped(*args, **kwargs)\n",
+    "  File \"/home/uvarikuti/ECE285/Project/Few-Shot-Segmentation-ECE-285/panet/PANet/experiments/train.py\", line 34, in main\n    torch.cuda.set_device(device=_config['gpu_id'])\n",
+    "  File \"/opt/conda/lib/python3.9/site-packages/torch/cuda/__init__.py\", line 264, in set_device\n    torch._C._cuda_setDevice(device)\n",
+    "RuntimeError: CUDA error: invalid device ordinal\nCUDA kernel errors might be asynchronously reported at some other API call,so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1.\n"
+  ],
+  "heartbeat": "2022-05-15T23:55:35.262187",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz",
+    "hostname": "dsmlp-jupyter-uvarikuti",
+    "os": [
+      "Linux",
+      "Linux-3.10.0-1160.59.1.el7.x86_64-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.9.5"
+  },
+  "meta": {
+    "command": "main",
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "gpu_id=2",
+        "mode=train",
+        "dataset=COCO",
+        "label_sets=3",
+        "model.align=True",
+        "task.n_ways=1",
+        "task.n_shots=5"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2022-05-15T23:55:35.225244",
+  "status": "FAILED",
+  "stop_time": "2022-05-15T23:55:35.269264"
+}
