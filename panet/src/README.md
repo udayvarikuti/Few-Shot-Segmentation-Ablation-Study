@@ -14,7 +14,7 @@ Modifications to the original repository for PANet
 
 ### Data Preparation
 
-The prepared data containing both VOC and COCO datasets can be found [here] (https://drive.google.com/file/d/1OGY-yDE01GETtNbJGhx94mKIqT0zwxPR/view?usp=sharing). If you want to setup the data manually, please follow the instructions below
+The prepared data containing both VOC and COCO datasets can be found [here](https://drive.google.com/file/d/1OGY-yDE01GETtNbJGhx94mKIqT0zwxPR/view?usp=sharing). If you want to setup the data manually, please follow the instructions below
 
 #### VOC Dataset
 
