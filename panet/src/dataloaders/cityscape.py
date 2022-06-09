@@ -1,20 +1,22 @@
 import cityscapesscripts.preparation.createTrainIdInstanceImgs as ins
-import os, glob, sys
+import os, glob
 from cityscapesscripts.helpers.annotation import Annotation
 from cityscapesscripts.helpers.labels import name2label
 from collections import defaultdict
 import random
 from PIL import Image
 from PIL import ImageDraw
-import torchvision
 from torch.utils.data import Dataset
 import numpy as np
 
 class Cityscape(Dataset):
-    def __init__(self, annotation_path, dataset_size, img_transforms=None, mask_transforms=None, n_ways=1,
+    def __init__(self, base_path, dataset_size, labels=None, split='train', img_transforms=None, mask_transforms=None, n_ways=1,
                  n_shots=1, n_queries=1,apply_flip=False):
         super().__init__()
-        self.annotation_path = annotation_path
+        self.base_path = base_path
+        self.image_path = os.path.join(self.base_path, 'leftImg8bit', split)
+        self.annotation_path = os.path.join(self.base_path, 'gtFine', split)
+        self.labels = list(labels)
         self.dataset_size = dataset_size
         self.label_dict = self.get_label_dict()
         self.class_files = self.get_labels_classwise(self)
@@ -26,27 +28,31 @@ class Cityscape(Dataset):
         self.dataset = self.generate_dataset()
         
     def get_label_dict(self):
-        labels =  ['road', 'sidewalk', 'building', 'wall', 'fence', 'pole', 'traffic light', 'traffic sign', 'vegetation', 'terrain', 'sky', 
-          'person','rider', 'car', 'truck', 'bus', 'train', 'motorcycle', 'bicycle']
-        return dict(zip(range(len(labels)), labels))
+        dataset_labels =  ['bicycle', 'sidewalk', 'traffic sign', 'rider','truck','road', 'building', 'wall', 'fence', 'pole', 'traffic light', 'vegetation', 'terrain', 'sky', 
+          'person', 'car', 'truck', 'bus', 'train', 'motorcycle']
+        return dict(zip(range(len(dataset_labels)), dataset_labels))
 
     def get_labels_classwise(self, files):
-        searchFine = os.path.join(self.annotation_path ,"gtFine", "*" , "*" ,"*_gt*_polygons.json")
+        searchFine = os.path.join(self.annotation_path, "*" ,"*_gt*_polygons.json")
         filesFine = glob.glob(searchFine)
         class_files = defaultdict(set)
+        if self.labels is not None:
+            self.selected_labels = {key: self.label_dict[key] for key in self.labels}
+        else:
+            self.selected_labels = self.label_dict
         for f in filesFine:
             annotation = Annotation()
             annotation.fromJsonFile(f)
             for obj in annotation.objects:
-                if obj.label in list(self.label_dict.values()):
+                if obj.label in list(self.selected_labels.values()):
                     class_files[obj.label].add(f)
         return class_files
-    
+        
     def generate_dataset(self):
         dataset = []
         for _ in range(self.dataset_size):
             sample = {}
-            self.support_classes = random.choices(list(self.label_dict.values()), k=self.n_ways)
+            self.support_classes = random.choices(list(self.selected_labels.values()), k=self.n_ways)
             self.query_classes = random.choices(self.support_classes, k=self.n_queries)
             
             support_labels, query_labels = [], []
@@ -70,7 +76,7 @@ class Cityscape(Dataset):
             if ( not label in name2label ) and label.endswith('group'):
                 label = label[:-len('group')]
             if not label in name2label:
-                print( "Label '{}' not known.".format(label) )
+                print("Label '{}' not known.".format(label))
             elif obj.label == class_label:
                 # If the object is deleted, skip it
                 if obj.deleted or name2label[label].id < 0:
@@ -87,10 +93,8 @@ class Cityscape(Dataset):
         return self.dataset_size
     
     def get_filename_from_annotation(self, ann_filename):
-        image_path = os.path.join(self.annotation_path ,"leftImg8bit")
-        ext_path = '/'.join(ann_filename.split('/')[-3:]).replace('gtFine_polygons', 'leftImg8bit').replace('.json'
-                                                                                                            , '.png')
-        return image_path + '/' + ext_path
+        ext_path = '/'.join(ann_filename.split('/')[-2:]).replace('gtFine_polygons', 'leftImg8bit').replace('.json','.png')
+        return self.image_path + '/' + ext_path
     
     def __getitem__(self, idx):
         sample = {}
@@ -119,21 +123,31 @@ class Cityscape(Dataset):
         #sample['support_mask'] = shot
         sample['query_labels'] = [self.mask_transforms(self.createLabelImg(f, class_label)[0]) for (f, class_label) in 
                                    zip(query_labels,self.query_classes)]
-        
-#         #Apply Transformations
-#         if self.transforms is not None:
-#             sample = self.transforms(sample)
-#         # Transform to tensor
-#         if self.to_tensor is not None:
-#             sample = self.to_tensor(sample)
                              
         return sample
-
-### USAGE
-# from torchvision.transforms import Compose
-# from torchvision import transforms
-
-# #RandomMirror, Resize, ToTensorNormalize
+        
+# USAGE
+# CLASS_LABELS = {
+#     'VOC': {
+#         'all': set(range(1, 21)),
+#         0: set(range(1, 21)) - set(range(1, 6)),
+#         1: set(range(1, 21)) - set(range(6, 11)),
+#         2: set(range(1, 21)) - set(range(11, 16)),
+#         3: set(range(1, 21)) - set(range(16, 21)),
+#     },
+#     'COCO': {
+#         'all': set(range(1, 81)),
+#         0: set(range(1, 81)) - set(range(1, 21)),
+#         1: set(range(1, 81)) - set(range(21, 41)),
+#         2: set(range(1, 81)) - set(range(41, 61)),
+#         3: set(range(1, 81)) - set(range(61, 81)),
+#     },
+#     'Cityscape': {
+#         'all': set(range(1, 20)),
+#         0: set(range(6, 20)),
+#         1: set(range(1, 6)),
+#     }
+# }
 # input_size = (417, 417)
 # cityscapesPath = '../../data/Cityscape'
 # dataset_size = 300
@@ -147,5 +161,5 @@ class Cityscape(Dataset):
 #                       transforms.Resize(size=input_size),
 #                       flip_transform])
 
-# dataset = Cityscape(cityscapesPath, dataset_size, img_transforms=img_transforms, mask_transforms=mask_transforms,
-#                    n_ways=5, n_shots=2, n_queries=2)
+# dataset = Cityscape(cityscapesPath, dataset_size, labels=CLASS_LABELS['Cityscape'][0], split='train',img_transforms=img_transforms, mask_transforms=mask_transforms,
+#                    n_ways=2, n_shots=1, n_queries=1)
