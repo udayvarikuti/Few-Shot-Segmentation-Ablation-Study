@@ -51,7 +51,6 @@ class Cityscape(Dataset):
     def generate_dataset(self):
         dataset = []
         for _ in range(self.dataset_size):
-            sample = {}
             self.support_classes = random.choices(list(self.selected_labels.values()), k=self.n_ways)
             self.query_classes = random.choices(self.support_classes, k=self.n_queries)
             
@@ -98,7 +97,6 @@ class Cityscape(Dataset):
     
     def __getitem__(self, idx):
         sample = {}
-        shot = {}
         support_labels = self.dataset[idx][:-self.n_queries]
         query_labels = self.dataset[idx][-self.n_queries:]
         
@@ -110,8 +108,9 @@ class Cityscape(Dataset):
         for way in support_labels:
             masks = []
             for (f, class_label) in zip(way,self.support_classes):
-                shot['fg_mask'] = self.mask_transforms(self.createLabelImg(f, class_label)[0])
-                shot['bg_mask'] = self.mask_transforms(self.createLabelImg(f, class_label)[1])
+                shot = {}
+                shot['fg_mask'] = self.mask_transforms(self.createLabelImg(f, class_label)[0]).squeeze(0)
+                shot['bg_mask'] = self.mask_transforms(self.createLabelImg(f, class_label)[1]).squeeze(0)
                 masks.append(shot)
             sample['support_mask'].append(masks)
                 

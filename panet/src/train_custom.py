@@ -10,17 +10,22 @@ from dataloaders.transforms import RandomMirror, Resize, ToTensorNormalize
 from util.utils import set_seed, CLASS_LABELS
 import torch.optim as optim
 import matplotlib.pyplot as plt
-import cv2
+from dataloaders.cityscape import Cityscape
+from torchvision.transforms import Compose
+from torchvision import transforms
+
+#import cv2
 import numpy as np
 
-USE_GPU = True
+USE_GPU = False
 
 dtype = torch.float32 # we will be using float throughout this tutorial
 
-if USE_GPU and torch.cuda.is_available():
-    device = torch.device('cuda')
+# if USE_GPU and torch.cuda.is_available():
+if USE_GPU:
+    device = torch.device('mps')
     #set the device to gpu0
-    torch.cuda.set_device(device=0)
+    #torch.cuda.set_device(device=0)
 else:
     device = torch.device('cpu')
 
@@ -31,32 +36,47 @@ steps=30000
 lambda_PAR=1
 
 #Get the dataset functions from here
-dataset_name="VOC"
-if dataset_name == 'VOC':
-    gen_dataset = voc_fewshot
-    data_dir='../../data/Pascal/VOCdevkit/VOC2012/'
-    data_split='trainaug'
-elif dataset_name == 'COCO':
-    gen_dataset = coco_fewshot
-    data_dir='../../data/COCO/'
-    data_split='train'
-# else: 
-#     dataset=cityscape_fewshot
+# dataset_name="COCO"
+# if dataset_name == 'VOC':
+#     gen_dataset = voc_fewshot
+#     data_dir='/Users/udayreddy/Desktop/ECE 285/Project/Few-Shot-Segmentation-ECE-285/data/Pascal/VOCdevkit/VOC2012'
+#     data_split='trainaug'
+# elif dataset_name == 'COCO':
+#     gen_dataset = coco_fewshot
+#     data_dir='/Users/udayreddy/Desktop/ECE 285/Project/Few-Shot-Segmentation-ECE-285/data/COCO'
+#     data_split='train'
+# # else: 
+# #     dataset=cityscape_fewshot
 
-labels = CLASS_LABELS[dataset_name][0]
-transforms = Compose([Resize(size=input_size),
-                        RandomMirror()])
-dataset = gen_dataset(
-    base_dir=data_dir,
-    split=data_split,
-    transforms=transforms,
-    to_tensor=ToTensorNormalize(),
-    labels=labels,
-    max_iters=batch_size*steps,
-    n_ways=1,
-    n_shots=1,
-    n_queries=1
-)
+# labels = CLASS_LABELS[dataset_name][0]
+# transforms = Compose([Resize(size=input_size),
+#                         RandomMirror()])
+# dataset = gen_dataset(
+#     base_dir=data_dir,
+#     split=data_split,
+#     transforms=transforms,
+#     to_tensor=ToTensorNormalize(),
+#     labels=labels,
+#     max_iters=batch_size*steps,
+#     n_ways=5,
+#     n_shots=2,
+#     n_queries=1
+# )
+
+cityscapesPath = 'data/Cityscape'
+dataset_size = 30000
+
+flip_transform = transforms.RandomHorizontalFlip(p=0.25)
+img_transforms = Compose([transforms.ToTensor(),
+                      transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+                      transforms.Resize(size=input_size),
+                      flip_transform])
+mask_transforms = Compose([transforms.ToTensor(),
+                      transforms.Resize(size=input_size),
+                      flip_transform])
+
+dataset = Cityscape(cityscapesPath, dataset_size, labels=CLASS_LABELS['Cityscape'][0], split='train',img_transforms=img_transforms, mask_transforms=mask_transforms,
+                   n_ways=5, n_shots=2, n_queries=1)
 
 train_loader = DataLoader(
     dataset,
@@ -85,16 +105,16 @@ def train_model(model, optimizer, scheduler ,epochs=1):
         for t,samples in enumerate(train_loader):
             
            #get a list of support images ( Sx W x H x W)
-            support_img=[[shot.cuda() for shot in way]
+            support_img=[[shot for shot in way]
                           for way in samples['support_images']]
-            fg_mask=[[shot[f'fg_mask'].float().cuda() for shot in way]
+            fg_mask=[[shot[f'fg_mask'].float() for shot in way]
                            for way in samples['support_mask']]
-            bg_mask=[[shot[f'bg_mask'].float().cuda() for shot in way]
+            bg_mask=[[shot[f'bg_mask'].float()for shot in way]
                            for way in samples['support_mask']]
-            query_img= [query.cuda()
+            query_img= [query
                         for query in samples['query_images']]
 
-            query_gt = torch.cat([queryGT.long().cuda()
+            query_gt = torch.cat([queryGT.long()
                         for queryGT in samples['query_labels']], dim=0)
 
             # Zero out all of the gradients for the variables which the optimizer
@@ -132,11 +152,12 @@ def train_model(model, optimizer, scheduler ,epochs=1):
     return (train_loss)
 
 #cfg True means align is on
-learning_rate=1e-3
-milestones= [steps//3,steps//2,steps]
-model = FewShotSeg(cfg={'align': True})
-optimizer = torch.optim.SGD(model.parameters(),lr=learning_rate,momentum=0.9,weight_decay=0.00005)
-scheduler = MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
-criterion = nn.CrossEntropyLoss(ignore_index=255)
+if __name__ == '__main__':
+    learning_rate=1e-3
+    milestones= [steps//3,steps//2,steps]
+    model = FewShotSeg(cfg={'align': True})
+    optimizer = torch.optim.SGD(model.parameters(),lr=learning_rate,momentum=0.9,weight_decay=0.00005)
+    scheduler = MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
+    criterion = nn.CrossEntropyLoss(ignore_index=255)
 
-train_loss=train_model(model, optimizer, scheduler ,epochs=1)
+    train_loss=train_model(model, optimizer, scheduler ,epochs=1)
