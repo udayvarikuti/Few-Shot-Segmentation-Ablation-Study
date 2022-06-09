@@ -9,6 +9,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .vgg import Encoder
+import lpips
 
 
 class FewShotSeg(nn.Module):
@@ -23,11 +24,11 @@ class FewShotSeg(nn.Module):
         cfg:
             model configurations
     """
-    def __init__(self, in_channels=3, pretrained_path=None, cfg=None):
+    def __init__(self, in_channels=3, pretrained_path=None, cfg=None,  distfunc="cosine"):
         super().__init__()
         self.pretrained_path = pretrained_path
         self.config = cfg or {'align': False}
-
+        self.distfunc=distfunc
         # Encoder
         self.encoder = nn.Sequential(OrderedDict([
             ('backbone', Encoder(in_channels, self.pretrained_path)),]))
@@ -108,7 +109,24 @@ class FewShotSeg(nn.Module):
             prototype: prototype of one semantic class
                 expect shape: 1 x C
         """
-        dist = F.cosine_similarity(fts, prototype[..., None, None], dim=1) * scaler
+        if(self.distfunc=="cosine"):
+            dist = F.cosine_similarity(fts, prototype[..., None, None], dim=1) * scaler
+            #print(self.distfunc)
+        elif(self.distfunc=="euclidean"):
+            fts=torch.permute(fts,(0,2,3,1))
+            scaler=5
+            dist= F.pairwise_distance(fts,prototype[:,None,None,:],p=2)*scaler
+            #print(self.distfunc)
+        elif(self.distfunc=="manhattan"):
+            fts=torch.permute(fts,(0,2,3,1))
+            scaler=10
+            dist= F.pairwise_distance(fts,prototype[:,None,None,:],p=1)*scaler
+            print(self.distfunc)
+        elif(self.distfunc=="lpips"):
+            loss_fn_alex = lpips.LPIPS(net='alex') # best forward scores
+            dist= loss_fn_alex(fts, prototype[..., None, None])
+            print(self.distfunc)
+
         return dist
 
 

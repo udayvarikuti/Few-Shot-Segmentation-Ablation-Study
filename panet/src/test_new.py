@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import MultiStepLR
 from torchvision.transforms import Compose
 from models.fewshotv3 import FewShotSegV3
+from models.fewshot import FewShotSeg
 from dataloaders.customized import voc_fewshot, coco_fewshot
 from dataloaders.transforms import RandomMirror, Resize, ToTensorNormalize
 from util.utils import set_seed, CLASS_LABELS
@@ -34,11 +35,13 @@ random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed_all(seed)
 
-id="0706221524"
+id="0906030148"
 dir= "./test_models/info/cfg_"+id+".json"
-model_path="./test_models/model/fs_"+id+".json"
+model_path="./test_models/model/fs_"+id+".pth"
 openfile=open(dir, "r")
 setup= json.load(openfile)
+
+print(setup)
 
 input_size = setup["input dims"]
 batch_size=setup["batch_size"]
@@ -49,7 +52,7 @@ shots=setup["shots"]
 nqueries=setup["num_queries"]
 dataset_name=setup["dataset"]
 steps=1000
-n_runs=5
+n_runs=1
 lambda_PAR=1
 criterion = nn.CrossEntropyLoss(ignore_index=255)
 
@@ -57,18 +60,19 @@ if dataset_name == 'VOC':
     gen_dataset = voc_fewshot
     data_dir='../../data/Pascal/VOCdevkit/VOC2012/'
     data_split='trainaug'
+    max_label=20
 elif dataset_name == 'COCO':
     gen_dataset = coco_fewshot
     data_dir='../../data/COCO/'
     data_split='train'
+    max_label=80
 # else: 
 #     dataset=cityscape_fewshot
-max_label=20
+
 metric = Metric(max_label=max_label, n_runs=n_runs)
 select_set=0
 labels = CLASS_LABELS[dataset_name]['all'] -  CLASS_LABELS[dataset_name][select_set]
 transforms = Compose([Resize(size=input_size),])
-transforms=Compose(transforms)
 
 def test_model(model):
     
@@ -102,16 +106,16 @@ def test_model(model):
 
             lossq=0
             losspar=0
+            train_loss={}
+            train_loss["loss_query"]=[]
+            train_loss["loss_PAR"]=[]
             for t,samples in enumerate(test_loader):
                 print_every=100
-                train_loss={}
+
                 label_ids = list(samples['class_ids'])
 
                 model = model.to(device=device)  # move the model parameters to CPU/GPU
-                train_loss["loss_query"]=0
-                train_loss["loss_PAR"]=0
 
-                        
                 #get a list of support images ( Sx W x H x W)
                 support_img=[[shot.cuda() for shot in way]
                             for way in samples['support_images']]
@@ -142,7 +146,11 @@ def test_model(model):
                     print('Epoch %d, Iteration %d, Seg loss = %.8f' % (run, t+1, (lossq/(t+1))))
                     print('Epoch %d, Iteration %d, PAR loss = %.8f' % (run, t+1, (losspar/(t+1))))
                     train_loss["loss_query"].append(lossq/(t+1))
-                    train_loss["loss_PAR"].append(losspar.detach().cpu().numpy()/(t+1))   
+                    train_loss["loss_PAR"].append(losspar/(t+1))
+                
+                metric.record(np.array(pred_query.argmax(dim=1)[0].cpu()),
+                              np.array(query_labels[0].cpu()),
+                              labels=label_ids, n_run=run)   
 
             measure["loss"]=train_loss
             classIoU, meanIoU = metric.get_mIoU(labels=sorted(labels), n_run=run)
@@ -157,10 +165,14 @@ def test_model(model):
 
 #cfg True means align is on
 learning_rate=1e-3
-model_path="./misc/fewshotdv3_cos_model.pth"
 milestones= [steps//3,steps//2,steps]
-model = FewShotSegV3(cfg={'align': True},distfunc="cosine")
+if(setup["backbone"]=="dv3"):
+    model = FewShotSegV3(cfg={'align': True},distfunc="cosine")
+elif(setup["backbone"]=="vgg"):
+    model = FewShotSeg(cfg={'align': True},distfunc=setup["distfunc"])
 model.load_state_dict(torch.load(model_path))
 
 
 metrics=test_model(model)
+
+print(metrics)

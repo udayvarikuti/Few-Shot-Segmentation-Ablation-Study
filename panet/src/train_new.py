@@ -47,7 +47,7 @@ setup["num_queries"]=1
 setup["batch_size"]=1
 setup["learning_rate"]=1e-3
 setup["distfunc"]="cosine"
-setup["backbone"]="vgg"
+setup["backbone"]="dv3"
 setup["dataset"]="VOC"
 setup["select_set"]=select_set
 batch_size=setup['batch_size']
@@ -185,7 +185,7 @@ milestones= [steps//3,steps//2,steps]
 if(setup['backbone']=="dv3"):
     model = FewShotSegV3(cfg={'align': True},distfunc=setup["distfunc"])
 else:
-    model = FewShotSeg(cfg={'align': True})
+    model = FewShotSeg(cfg={'align': True},distfunc=setup["distfunc"])
 optimizer = torch.optim.SGD(model.parameters(),lr=setup["learning_rate"],momentum=0.9,weight_decay=0.00005)
 scheduler = MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
 criterion = nn.CrossEntropyLoss(ignore_index=255)
