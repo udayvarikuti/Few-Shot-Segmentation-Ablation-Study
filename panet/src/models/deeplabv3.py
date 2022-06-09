@@ -18,6 +18,7 @@ class Encoder(nn.Module):
         super().__init__()
         self.features = torch.hub.load('pytorch/vision:v0.10.0', 'deeplabv3_resnet101', pretrained=True)
         self.features.aux_classifier=Identity()
+        self.features
         #print(type(self.features))
 
     def forward(self, x):
@@ -25,3 +26,7 @@ class Encoder(nn.Module):
         #print(type(y))
         #print(y)
         return y
+
+
+# a=Encoder()
+# print(a.features)

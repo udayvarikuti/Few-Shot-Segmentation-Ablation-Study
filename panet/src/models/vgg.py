@@ -17,7 +17,7 @@ class Encoder(nn.Module):
     """
     def __init__(self, in_channels=3, pretrained_path=None):
         super().__init__()
-        self.pretrained_path = pretrained_path
+        self.pretrained_path = "./pretrained_model/vgg16-397923af.pth"
 
         self.features = nn.Sequential(
             self._make_layer(2, in_channels, 64),
