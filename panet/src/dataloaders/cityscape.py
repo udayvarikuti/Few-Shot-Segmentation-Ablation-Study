@@ -120,7 +120,7 @@ class Cityscape(Dataset):
         #shot['bg_mask'] = [[self.mask_transforms(self.createLabelImg(f, class_label)[1]) for (f, class_label) in 
                               #zip(way,self.support_classes)] for way in support_labels]
         #sample['support_mask'] = shot
-        sample['query_labels'] = [self.mask_transforms(self.createLabelImg(f, class_label)[0]) for (f, class_label) in 
+        sample['query_labels'] = [self.mask_transforms(self.createLabelImg(f, class_label)[0]).squeeze(0) for (f, class_label) in 
                                    zip(query_labels,self.query_classes)]
                              
         return sample
