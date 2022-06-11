@@ -7,14 +7,12 @@ from collections import OrderedDict
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torchvision
 
-from .deeplabv3 import Encoder
+from .resnet50 import Encoder
 import lpips
 
 
-
-class FewShotSegV3(nn.Module):
+class FewShotSegResnet(nn.Module):
     """
     Fewshot Segmentation model
 
@@ -26,7 +24,7 @@ class FewShotSegV3(nn.Module):
         cfg:
             model configurations
     """
-    def __init__(self, in_channels=3, pretrained_path=None, cfg=None, distfunc="cosine"):
+    def __init__(self, in_channels=3, pretrained_path=None, cfg=None,  distfunc="cosine"):
         super().__init__()
         self.pretrained_path = pretrained_path
         self.config = cfg or {'align': False}
@@ -111,8 +109,6 @@ class FewShotSegV3(nn.Module):
             prototype: prototype of one semantic class
                 expect shape: 1 x C
         """
-        #print(prototype.shape)
-        #print(fts.shape)
         if(self.distfunc=="cosine"):
             dist = F.cosine_similarity(fts, prototype[..., None, None], dim=1) * scaler
             #print(self.distfunc)

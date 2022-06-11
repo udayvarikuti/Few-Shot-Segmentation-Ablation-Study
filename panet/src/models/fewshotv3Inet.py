@@ -9,12 +9,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 
-from .deeplabv3 import Encoder
+from .dv3INet import Encoder
 import lpips
 
 
 
-class FewShotSegV3(nn.Module):
+class FewShotSegV3Inet(nn.Module):
     """
     Fewshot Segmentation model
 
