@@ -9,7 +9,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .vgg import Encoder
-import lpips
+#import lpips
 
 
 class FewShotSeg(nn.Module):

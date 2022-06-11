@@ -28,8 +28,7 @@ class Cityscape(Dataset):
         self.dataset = self.generate_dataset()
         
     def get_label_dict(self):
-        dataset_labels =  ['bicycle', 'sidewalk', 'traffic sign', 'rider','truck','road', 'building', 'wall', 'fence', 'pole', 'traffic light', 'vegetation', 'terrain', 'sky', 
-          'person', 'car', 'truck', 'bus', 'train', 'motorcycle']
+        dataset_labels =  ['bicycle', 'vegetation', 'traffic sign', 'rider','truck','road', 'building', 'wall', 'fence', 'pole', 'traffic light', 'sidewalk', 'terrain', 'sky', 'person', 'car', 'bus', 'train', 'motorcycle']
         return dict(zip(range(len(dataset_labels)), dataset_labels))
 
     def get_labels_classwise(self, files):
@@ -50,16 +49,21 @@ class Cityscape(Dataset):
         
     def generate_dataset(self):
         dataset = []
+        self.support_classes = []
+        self.query_classes = []
         for _ in range(self.dataset_size):
-            self.support_classes = random.choices(list(self.selected_labels.values()), k=self.n_ways)
-            self.query_classes = random.choices(self.support_classes, k=self.n_queries)
+            support_class = random.choices(list(self.selected_labels.values()), k=self.n_ways)
+            query_class = random.choices(support_class, k=self.n_queries)
             
             support_labels, query_labels = [], []
-            for sup_class in self.support_classes:
+            for sup_class in support_class:
                 support_labels.append(random.choices(list(self.class_files[sup_class]), k=self.n_shots))
-            for que_class in self.query_classes:
+            for que_class in query_class:
                 query_labels.extend(random.choices(list(self.class_files[que_class]), k=1))
+                
             dataset.append(support_labels+query_labels)
+            self.support_classes.append(support_class)
+            self.query_classes.append(query_class)
             
         return dataset
     
@@ -99,7 +103,15 @@ class Cityscape(Dataset):
         sample = {}
         support_labels = self.dataset[idx][:-self.n_queries]
         query_labels = self.dataset[idx][-self.n_queries:]
+        support_classes = self.support_classes[idx]
+        query_classes = self.query_classes[idx]
         
+        sample['class_ids'] = []
+        for sp_class in support_classes:
+            for class_id, class_label in self.label_dict.items():
+                if class_label == sp_class:
+                    sample['class_ids'].append(class_id)
+
         sample['support_images'] = [[self.img_transforms(Image.open(self.get_filename_from_annotation(path)))  
                                     for path in label_path] for label_path in support_labels]
         sample['query_images'] = [self.img_transforms(Image.open(self.get_filename_from_annotation(label_path)))
@@ -107,7 +119,7 @@ class Cityscape(Dataset):
         sample['support_mask'] = []
         for way in support_labels:
             masks = []
-            for (f, class_label) in zip(way,self.support_classes):
+            for (f, class_label) in zip(way,support_classes):
                 shot = {}
                 shot['fg_mask'] = self.mask_transforms(self.createLabelImg(f, class_label)[0]).squeeze(0)
                 shot['bg_mask'] = self.mask_transforms(self.createLabelImg(f, class_label)[1]).squeeze(0)
@@ -120,8 +132,7 @@ class Cityscape(Dataset):
         #shot['bg_mask'] = [[self.mask_transforms(self.createLabelImg(f, class_label)[1]) for (f, class_label) in 
                               #zip(way,self.support_classes)] for way in support_labels]
         #sample['support_mask'] = shot
-        sample['query_labels'] = [self.mask_transforms(self.createLabelImg(f, class_label)[0]).squeeze(0) for (f, class_label) in 
-                                   zip(query_labels,self.query_classes)]
+        sample['query_labels'] = [self.mask_transforms(self.createLabelImg(f, class_label)[0]).squeeze(0) for (f, class_label) in zip(query_labels,query_classes)]
                              
         return sample
         

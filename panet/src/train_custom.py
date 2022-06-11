@@ -36,7 +36,7 @@ steps=30000
 lambda_PAR=1
 
 #Get the dataset functions from here
-# dataset_name="COCO"
+# dataset_name="VOC"
 # if dataset_name == 'VOC':
 #     gen_dataset = voc_fewshot
 #     data_dir='/Users/udayreddy/Desktop/ECE 285/Project/Few-Shot-Segmentation-ECE-285/data/Pascal/VOCdevkit/VOC2012'
@@ -45,8 +45,8 @@ lambda_PAR=1
 #     gen_dataset = coco_fewshot
 #     data_dir='/Users/udayreddy/Desktop/ECE 285/Project/Few-Shot-Segmentation-ECE-285/data/COCO'
 #     data_split='train'
-# # else: 
-# #     dataset=cityscape_fewshot
+# else: 
+#     dataset=cityscape_fewshot
 
 # labels = CLASS_LABELS[dataset_name][0]
 # transforms = Compose([Resize(size=input_size),
@@ -63,7 +63,7 @@ lambda_PAR=1
 #     n_queries=1
 # )
 
-cityscapesPath = 'data/Cityscape'
+cityscapesPath = '../../data/Cityscape'
 dataset_size = 30000
 
 flip_transform = transforms.RandomHorizontalFlip(p=0.25)
@@ -75,7 +75,7 @@ mask_transforms = Compose([transforms.ToTensor(),
                       transforms.Resize(size=input_size),
                       flip_transform])
 
-dataset = Cityscape(cityscapesPath, dataset_size, labels=CLASS_LABELS['Cityscape'][0], split='train',img_transforms=img_transforms, mask_transforms=mask_transforms,
+dataset = Cityscape(cityscapesPath, dataset_size, labels=CLASS_LABELS['Cityscape'][1], split='val',img_transforms=img_transforms, mask_transforms=mask_transforms,
                    n_ways=5, n_shots=2, n_queries=1)
 
 train_loader = DataLoader(

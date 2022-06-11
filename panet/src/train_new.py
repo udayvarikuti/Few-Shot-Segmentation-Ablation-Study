@@ -16,17 +16,18 @@ import cv2
 import numpy as np
 import json
 from datetime import datetime
-from torchinfo import summary
+#from torchinfo import summary
 import random
 
-USE_GPU = True
+USE_GPU = False
 
 dtype = torch.float32 # we will be using float throughout this tutorial
 
-if USE_GPU and torch.cuda.is_available():
-    device = torch.device('cuda')
+#if USE_GPU and torch.cuda.is_available():
+if USE_GPU:
+    device = torch.device('mps')
     #set the device to gpu0
-    torch.cuda.set_device(device=0)
+    #torch.cuda.set_device(device=0)
 else:
     device = torch.device('cpu')
 
@@ -46,8 +47,8 @@ setup["shots"]=1
 setup["num_queries"]=1
 setup["batch_size"]=1
 setup["learning_rate"]=1e-3
-setup["distfunc"]="cosine"
-setup["backbone"]="dv3"
+setup["distfunc"]="euclidean"
+setup["backbone"]="vgg"
 setup["dataset"]="VOC"
 setup["select_set"]=select_set
 batch_size=setup['batch_size']
@@ -131,16 +132,16 @@ def train_model(model, optimizer, scheduler ,epochs=1):
         for t,samples in enumerate(train_loader):
             
            #get a list of support images ( Sx W x H x W)
-            support_img=[[shot.cuda() for shot in way]
+            support_img=[[shot for shot in way]
                           for way in samples['support_images']]
-            fg_mask=[[shot[f'fg_mask'].float().cuda() for shot in way]
+            fg_mask=[[shot[f'fg_mask'].float() for shot in way]
                            for way in samples['support_mask']]
-            bg_mask=[[shot[f'bg_mask'].float().cuda() for shot in way]
+            bg_mask=[[shot[f'bg_mask'].float() for shot in way]
                            for way in samples['support_mask']]
-            query_img= [query.cuda()
+            query_img= [query
                         for query in samples['query_images']]
 
-            query_gt = torch.cat([queryGT.long().cuda()
+            query_gt = torch.cat([queryGT.long()
                         for queryGT in samples['query_labels']], dim=0)
 
             # Zero out all of the gradients for the variables which the optimizer
@@ -191,27 +192,27 @@ scheduler = MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
 criterion = nn.CrossEntropyLoss(ignore_index=255)
 
 
+if __name__ == '__main__':
+    info=str(model)
+    now = datetime.now()
+    timestamp= now.strftime("%d%m%H%M%S")
+    filename="./test_models/info/cfg_"+timestamp+".json"
+    model_path="./test_models/model/fs_"+timestamp+".pth"
 
-info=str(model)
-now = datetime.now()
-timestamp= now.strftime("%d%m%H%M%S")
-filename="./test_models/info/cfg_"+timestamp+".json"
-model_path="./test_models/model/fs_"+timestamp+".pth"
+    setup["desctiption"]="Experiment1: fewshot with vgg encoder with euclidean dist"
+    #setup["model_summary"]=info
+    setup["optimizer"]=str(optimizer)
+    setup["epochs"]=1
+    setup["model path"]=model_path
 
-setup["desctiption"]="Experiment1: fewshot with vgg encoder with cosine dist"
-#setup["model_summary"]=info
-setup["optimizer"]=str(optimizer)
-setup["epochs"]=1
-setup["model path"]=model_path
+    json_directory = json.dumps(setup,indent=4)
+    with open(filename, "w") as outfile:
+        outfile.write(json_directory)
 
-json_directory = json.dumps(setup,indent=4)
-with open(filename, "w") as outfile:
-    outfile.write(json_directory)
-
-#update file with loss array
-train_loss=train_model(model, optimizer, scheduler ,epochs=1)
-torch.save(model.state_dict(),model_path)
-setup["losses"]=train_loss
-json_directory = json.dumps(setup,indent=4)
-with open(filename, "w") as outfile:
-    outfile.write(json_directory)
+    #update file with loss array
+    train_loss=train_model(model, optimizer, scheduler ,epochs=1)
+    torch.save(model.state_dict(),model_path)
+    setup["losses"]=train_loss
+    json_directory = json.dumps(setup,indent=4)
+    with open(filename, "w") as outfile:
+        outfile.write(json_directory)

@@ -27,11 +27,11 @@ CLASS_LABELS = {
         2: set(range(1, 81)) - set(range(41, 61)),
         3: set(range(1, 81)) - set(range(61, 81)),
     },
-        'Cityscape': {
-            'all': set(range(1, 20)),
-            0: set(range(6, 20)),
+     'Cityscape': {
+            'all': set(range(1, 19)),
+            0: set(range(6, 19)),
             1: set(range(1, 6)),
-        }
+    }
 }
 
 def get_bbox(fg_mask, inst_mask):
