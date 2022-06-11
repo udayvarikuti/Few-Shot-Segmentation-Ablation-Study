@@ -1,0 +1,21 @@
+{
+    "seed": 1234,
+    "input dims": [
+        417,
+        417
+    ],
+    "steps": 30000,
+    "ways": 1,
+    "shots": 1,
+    "num_queries": 1,
+    "batch_size": 1,
+    "learning_rate": 0.0001,
+    "distfunc": "cosine",
+    "backbone": "dv3",
+    "dataset": "Cityscape",
+    "select_set": 0,
+    "desctiption": "Experiment: fewshot with dv3 encoder with cosine dist resnet50 Cityscape",
+    "optimizer": "SGD (\nParameter Group 0\n    dampening: 0\n    initial_lr: 0.0001\n    lr: 0.0001\n    maximize: False\n    momentum: 0.9\n    nesterov: False\n    weight_decay: 5e-05\n)",
+    "epochs": 1,
+    "model path": "./test_models/model/fs_0906231307.pth"
+}

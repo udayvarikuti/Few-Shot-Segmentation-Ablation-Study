@@ -1,3 +1,4 @@
+from soupsieve import select
 import torch
 import torch.nn as nn
 import torch.optim
@@ -18,6 +19,9 @@ import cv2
 import numpy as np
 import random
 from tqdm import tqdm
+from dataloaders.cityscape import Cityscape
+from torchvision.transforms import Compose
+from torchvision import transforms
 
 USE_GPU = True
 
@@ -37,7 +41,7 @@ random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed_all(seed)
 
-id="1006173828"
+id="1006054524"
 dir= "./test_models/info/cfg_"+id+".json"
 model_path="./test_models/model/fs_"+id+".pth"
 openfile=open(dir, "r")
@@ -57,24 +61,55 @@ steps=1000
 n_runs=1
 lambda_PAR=1
 criterion = nn.CrossEntropyLoss(ignore_index=255)
-
-if dataset_name == 'VOC':
-    gen_dataset = voc_fewshot
-    data_dir='../../data/Pascal/VOCdevkit/VOC2012/'
-    data_split='trainaug'
-    max_label=20
-elif dataset_name == 'COCO':
-    gen_dataset = coco_fewshot
-    data_dir='../../data/COCO/'
-    data_split='train'
-    max_label=80
-# else: 
-#     dataset=cityscape_fewshot
-
-metric = Metric(max_label=max_label, n_runs=n_runs)
 select_set=0
-labels = CLASS_LABELS[dataset_name]['all'] -  CLASS_LABELS[dataset_name][select_set]
-transforms = Compose([Resize(size=input_size),])
+#Get the dataset functions from here
+if dataset_name == 'Cityscape':
+        cityscapesPath = '../../data/Cityscape'
+        dataset_size = 1000
+
+        flip_transform = transforms.RandomHorizontalFlip(p=0.25)
+        img_transforms = Compose([transforms.ToTensor(),
+                            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+                            transforms.Resize(size=input_size),])
+        # img_transforms = Compose([transforms.ToTensor(),
+        #                       transforms.Resize(size=input_size),])
+                            #flip_transform])
+        mask_transforms = Compose([transforms.ToTensor(),
+                            transforms.Resize(size=input_size),])
+                            #flip_transform])
+
+        dataset = Cityscape(cityscapesPath, dataset_size, labels=CLASS_LABELS[dataset_name][select_set], split='val',img_transforms=img_transforms, mask_transforms=mask_transforms,
+                        n_ways=1, n_shots=1, n_queries=1)
+        labels = CLASS_LABELS[dataset_name][select_set]
+        labels_val = CLASS_LABELS[dataset_name]["all"]-labels
+        
+else:
+    if dataset_name == 'VOC':
+        gen_dataset = voc_fewshot
+        data_dir='../../data/Pascal/VOCdevkit/VOC2012/'
+        data_split='trainaug'
+    elif dataset_name == 'COCO':
+        gen_dataset = coco_fewshot
+        data_dir='../../data/COCO/'
+        data_split='train'
+# else:
+#     dataset=cityscape_fewshot
+    labels = CLASS_LABELS[dataset_name][select_set]
+    labels_val = CLASS_LABELS[dataset_name]["all"]-labels
+    transforms = Compose([Resize(size=input_size)])
+    dataset = gen_dataset(
+        base_dir=data_dir,
+        split=data_split,
+        transforms=transforms,
+        to_tensor=ToTensorNormalize(),
+        labels=labels_val,
+        max_iters=setup['batch_size'] *steps,
+        n_ways=setup['ways'],
+        n_shots=setup['shots'],
+        n_queries=setup['num_queries']
+    )
+
+metric = Metric(max_label=19, n_runs=n_runs)
 
 def test_model(model):
     
@@ -85,26 +120,17 @@ def test_model(model):
         for run in range(n_runs):
             measure={}
             set_seed(seed+run)
-            dataset = gen_dataset(
-                base_dir=data_dir,
-                split=data_split,
-                transforms=transforms,
-                to_tensor=ToTensorNormalize(),
-                labels=labels,
-                max_iters=batch_size*steps,
-                n_ways=ways,
-                n_shots=shots,
-                n_queries=nqueries
-            )
+ 
 
             test_loader = DataLoader(
                 dataset,
-                batch_size=batch_size,
-                shuffle=False,
+                batch_size=setup['batch_size'],
+                shuffle=True,
                 num_workers=1,
                 pin_memory=True,
                 drop_last=True
             )
+        
 
             lossq=0
             losspar=0
