@@ -9,7 +9,6 @@ import torch
 import numpy as np
 
 from .pascal import VOC
-from .coco import COCOSeg
 from .common import PairedDataset
 
 
