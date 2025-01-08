@@ -1,0 +1,21 @@
+{
+    "seed": 1234,
+    "input dims": [
+        417,
+        417
+    ],
+    "steps": 30000,
+    "ways": 1,
+    "shots": 1,
+    "num_queries": 1,
+    "batch_size": 1,
+    "learning_rate": 0.001,
+    "distfunc": "cosine",
+    "backbone": "vgg",
+    "dataset": "VOC",
+    "select_set": 0,
+    "desctiption": "Experiment: fewshot with vgg encoder with cosine dist without augmentations",
+    "optimizer": "SGD (\nParameter Group 0\n    dampening: 0\n    initial_lr: 0.001\n    lr: 0.001\n    momentum: 0.9\n    nesterov: False\n    weight_decay: 5e-05\n)",
+    "epochs": 1,
+    "model path": "./test_models/model/fs_0906155214.pth"
+}
